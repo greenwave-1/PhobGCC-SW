@@ -2,6 +2,7 @@
 #include "pico/bootrom.h"
 #include "pico/multicore.h"
 #include "hardware/timer.h"
+#include "hardware/clocks.h"
 #include "hardware/pwm.h"
 
 #include "phobGCC.h"

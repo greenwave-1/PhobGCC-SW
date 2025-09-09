@@ -1,6 +1,6 @@
 #include <cmath>
 #include <cstring>
-#include "pico/platform.h"
+#include "pico.h"
 #include "cvideo.h"
 #include "cvideo_variables.h"
 #include "menu.h"

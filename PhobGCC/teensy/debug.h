@@ -1,6 +1,9 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
+// this doesn't seem right...
+//#include "Arduino.h"
+
 #define DEBUG_ENABLED 1
 
 inline void debug_print(const char* str) {

@@ -26,14 +26,14 @@ add_executable(phobgcc_rp2040
 	src/storage.cpp
 	src/readHardware.cpp
 	src/games/ping.cpp
-	../extras/extras.cpp
-	../extras/ess.cpp
-	../extras/gts_comms.cpp
-	../common/curveFitting.cpp
-	../common/filter.cpp
-	../common/phobGCC.cpp
-	../common/stick.cpp
-	../common/variables.cpp
+	../src/common/curveFitting.cpp
+	../src/common/filter.cpp
+	../src/common/phobGCC.cpp
+	../src/common/stick.cpp
+	../src/common/variables.cpp
+	../src/extras/extras.cpp
+	../src/extras/ess.cpp
+	../src/extras/gts_comms.cpp
 	)
 
 pico_generate_pio_header(phobgcc_rp2040 ${CMAKE_CURRENT_LIST_DIR}/pio/joybus.pio)

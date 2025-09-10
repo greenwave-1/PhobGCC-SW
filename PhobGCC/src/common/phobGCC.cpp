@@ -1,4 +1,4 @@
-#include "phobGCC.h"
+#include "../common/phobGCC.h"
 
 
 ControlConfig _controls{

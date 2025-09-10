@@ -1,6 +1,12 @@
-#include "extras.h"
+#include "../extras/extras.h"
 
-ExtrasFunctions extrasFunctions[EXTRAS_SIZE] = {NULL};
+#ifdef PICO_RP2040
+#include "debug.h"
+#else
+#include "../teensy/debug.h"
+#endif
+
+ExtrasFunctions extrasFunctions[EXTRAS_SIZE] = { };
 
 
 void extrasConfigAssign(ExtrasSlot slot, ExtrasToggleFn toggleFn, ExtrasConfigFn configFn){

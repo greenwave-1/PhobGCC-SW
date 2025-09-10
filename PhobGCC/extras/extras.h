@@ -1,9 +1,12 @@
 #ifndef EXTRAS_H
 #define EXTRAS_H
 
-#include "debug.h"
-#include "structsAndEnums.h"
+#include "../common/structsAndEnums.h"
+#ifdef PICO_RP2040
 #include "storage/pages/storage.h"
+#else
+#include "../teensy/settings.h"
+#endif
 
 /* Plugins and extra features outside the normal scope of
  * the PhobGCC can be found here. Uncomment each #define
@@ -24,8 +27,10 @@
 #include "gts_comms.h"
 #endif
 
-typedef bool(*ExtrasToggleFn)(IntOrFloat config[]);//Used for toggling extras
-typedef void(*ExtrasConfigFn)(IntOrFloat config[], Cardinals dpad);//Used for configuring extras with the Dpad
+using ExtrasToggleFn = bool (*)(IntOrFloat*);//(IntOrFloat config[]);
+using ExtrasConfigFn = void (*)(IntOrFloat*, Cardinals);//(IntOrFloat config[], Cardinals dpad);
+//typedef bool(*ExtrasToggleFn)(IntOrFloat config[]);//Used for toggling extras
+//typedef void(*ExtrasConfigFn)(IntOrFloat config[], Cardinals dpad);//Used for configuring extras with the Dpad
 
 struct ExtrasFunctions{
 	ExtrasToggleFn toggleFn;

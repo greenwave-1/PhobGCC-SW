@@ -2,7 +2,7 @@
 #define EXTRAS_ESS_H
 
 #include "extras.h"
-#include "stick.h"
+#include "../common/stick.h"
 
 namespace ess {
 	/* This namespace uses GPLv3 Licensed code from Skuzee's ESS Adapter 

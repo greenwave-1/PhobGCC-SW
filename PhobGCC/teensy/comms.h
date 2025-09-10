@@ -643,6 +643,16 @@ void communicate(){
 			_commStatus = _commWrite;
 			Serial.println("origin");
 		  break;
+		  /*
+#ifdef EXTRAS_GTS_COMMS
+		case 0x60:
+			// only respond if extra is enabled, and we're not in safe mode
+			if (gts_comms::isEnabled(_controls.extras[gts_comms::extrasGTSConfigSlot].config) && !_controls.safeMode) {
+			
+			}
+			break;
+#endif
+		   */
 
 		//poll
 		case 0x40:

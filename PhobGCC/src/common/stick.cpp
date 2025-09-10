@@ -1,6 +1,10 @@
-#include "stick.h"
+#include "../common/stick.h"
 
+#ifdef PICO_RP2040
 #include "debug.h"
+#else
+#include "../teensy/debug.h"
+#endif
 
 float linearize(const float point, const float coefficients[]){
 	return (coefficients[0]*(point*point*point) + coefficients[1]*(point*point) + coefficients[2]*point + coefficients[3]);

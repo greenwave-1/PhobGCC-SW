@@ -1,4 +1,4 @@
-#include "curveFitting.h"
+#include "../common/curveFitting.h"
 #include <cmath>
 
 void cpyArray(double *src, double*dest, int n)

@@ -4,7 +4,7 @@
 #define EXTRAS_GTS_COMMS_H
 
 #include "extras.h"
-#include "structsAndEnums.h"
+#include "../common/structsAndEnums.h"
 
 namespace gts_comms {
 	extern ExtrasSlot extrasGTSConfigSlot;

@@ -3,6 +3,10 @@
 #include "hardware/gpio.h"
 #include "hardware/pwm.h"
 
+#include "extras.h"
+
+#include "phobGCC.h"
+
 #include "hardware/pio.h"
 #include "joybus.pio.h"
 #include <string.h>
@@ -192,6 +196,35 @@ void __time_critical_func(enterMode)(const int dataPin,
             }
 
         }
+#ifdef EXTRAS_GTS_COMMS
+        //Respond to 0x60 if gts comms extras is enabled, and if we're outside of safe mode
+        //For any of these, we don't use the first response byte, since two bits are reserved for errors
+        else if (joybusByte == 0x60 && gts_comms::isEnabled(_controls.extras[gts_comms::extrasGTSConfigSlot].config) && !_controls.safeMode) {
+			
+			//get the second byte; we do this interleaved with work that must be done
+            //joybusByte = pio_sm_get_blocking(pio, 0);
+			
+			//get the third byte; we do this interleaved with work that must be done
+            //joybusByte = pio_sm_get_blocking(pio, 0);
+			
+            int controlsSize = gts_comms::getSettingsLen();
+            //uint8_t probeResponse[4] = { 0x00, 0xFF, 0xFF, 0xFF };
+            //probeResponse[2] = (controlsSize & 0xFF00) >> 8;
+            //probeResponse[3] = controlsSize & 0x00FF;
+            uint8_t probeResponse[2] = { 0x00, 0xFF };
+            uint32_t result[4];
+            int resultLen;
+            //convertToPio(probeResponse, 4, result, resultLen);
+            convertToPio(probeResponse, 2, result, resultLen);
+            sleep_us(15); // 3.75us into the bit before end bit => 6.25 to wait if the end-bit is 5us long
+
+            pio_sm_set_enabled(pio, 0, false);
+            pio_sm_init(pio, 0, offset+joybus_offset_outmode, &config);
+            pio_sm_set_enabled(pio, 0, true);
+
+            for (int i = 0; i<resultLen; i++) pio_sm_put_blocking(pio, 0, result[i]);
+        }
+#endif
         else {
             pio_sm_set_enabled(pio, 0, false);
             sleep_us(400);

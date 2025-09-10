@@ -4,22 +4,22 @@
 #include "structsAndEnums.h"
 
 
-Buttons _btn;
+extern Buttons _btn;
 
-Buttons _hardware;
+extern Buttons _hardware;
 
-RawStick _raw;
+extern RawStick _raw;
 
-StickParams _aStickParams;
+extern StickParams _aStickParams;
 
-StickParams _cStickParams;
+extern StickParams _cStickParams;
 
 //ADC reference values for Phob 1.0
-float _ADCScale = 1;
-float _ADCScaleFactor = 1;
+extern float _ADCScale;
+extern float _ADCScaleFactor;
 
-int _rumblePower = 0;
+extern int _rumblePower;
 
-float _dT;
+extern float _dT;
 
 #endif //VARIABLES_H

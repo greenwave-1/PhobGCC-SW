@@ -11,7 +11,9 @@
 extern TeensyTimerTool::OneShotTimer timer1;
 
 extern const int _originLength;
-//extern volatile char _originResponse[];
+extern const char _probeResponse[];
+extern volatile char _originResponse[];
+extern volatile char _commResponse[];
 extern const int _fastBaud;
 extern const int _slowBaud;
 extern const int _probeLength;
@@ -30,10 +32,6 @@ const int _slowBDL = (_slowDivider >> 5) & 0xFF;
 const int _fastC4 = _fastDivider & 0x1F;
 const int _slowC4 = _slowDivider & 0x1F;
 extern volatile int _writeQueue;
-
-extern const char _probeResponse[];
-extern volatile char _originResponse[];
-extern volatile char _commResponse[];
 
 extern volatile char _bitCount;
 extern volatile int _commStatus;
@@ -56,11 +54,6 @@ extern char _writeBuffer[128];
 extern int _errorCount;
 extern int _reportCount;
 
-const char _probeResponse[] = {
-0,0,0,0, 1,0,0,1,
-0,0,0,0, 0,0,0,0,
-0,0,0,0, 0,0,1,1};
-extern volatile char _commResponse[];
 #endif // TEENSY4_0
 
 /*******************

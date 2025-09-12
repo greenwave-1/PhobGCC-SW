@@ -1,10 +1,10 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-// this doesn't seem right...
-#include "HardwareSerial.h"
+#define DEBUG_ENABLED 1
 
-//#define DEBUG_ENABLED 1
+//this doesn't seem right, or safe...
+#include "Arduino.h"
 
 inline void debug_print(const char* str) {
 #if (DEBUG_ENABLED)

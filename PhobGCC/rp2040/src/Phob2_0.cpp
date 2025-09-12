@@ -48,4 +48,7 @@ const int _pinCx = -1;
 const int _pinCy = -1;
 const int _pinRX = -1;
 
+//number used to determine what board type at compile time
+const int _boardID = 7;
+
 #endif

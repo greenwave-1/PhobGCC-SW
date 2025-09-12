@@ -29,6 +29,8 @@ const int _pinS = 19;
 const int _pinLED = 13;
 const int _pinInt = 9;
 
+const int _boardID = 2;
+
 //don't #define USEADCSCALE
 
 void serialSetup() {

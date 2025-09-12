@@ -104,6 +104,9 @@ extern const int _pinZ;
 extern const int _pinS;
 extern const int _pinLED;
 
+//number used to determine what board type at compile time
+extern const int _boardID;
+
 #ifndef PICO_RP2040
 #include <ADC.h>
 

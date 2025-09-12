@@ -2,6 +2,19 @@
 
 #include "../../common/variables.h"
 
+#include "../../extras/extras.h"
+
+#ifdef EXTRAS_GTS_COMMS
+#include "../../common/phobGCC.h"
+#include "../../extras/gts_comms.h"
+#include "../../teensy/debug.h"
+static bool gtsCommandArgExpected = false;
+static bool gtsReadySend = false;
+static uint8_t responseArr[10] = { 0 };
+static volatile char _gtsResponse[80] = { 0 };
+static int responseArrEnd = 0;
+#endif
+
 TeensyTimerTool::OneShotTimer timer1;
 
 
@@ -85,6 +98,10 @@ volatile char _commResponse[_originLength] = {
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0};
+const char _probeResponse[] = {
+0,0,0,0, 1,0,0,1,
+0,0,0,0, 0,0,0,0,
+0,0,0,0, 0,0,1,1};
 #endif
 
 /*******************
@@ -331,6 +348,69 @@ void commInt() {
 				_bitQueue = 16;
 				setCommResponse(_commResponse, _btn);
 			}
+#ifdef EXTRAS_GTS_COMMS
+			//0x60
+			// only respond if extra is enabled, and we're not in safe mode
+			// checks for safe mode and enabled are in if so that if either are false we fall to the default case below
+			else if(_cmdByte == 0b01100000 && gts_comms::isEnabled(_controls.extras[gts_comms::extrasGTSConfigSlot].config) && !_controls.safeMode) {
+				gtsCommandArgExpected = true;
+				_bitQueue = 8;
+			}
+			
+			// we should be receiving a command arg
+			else if(gtsCommandArgExpected && gts_comms::isEnabled(_controls.extras[gts_comms::extrasGTSConfigSlot].config) && !_controls.safeMode) {
+				// get response for given argument
+				responseArrEnd = gts_comms::interpretCommandArg(_cmdByte, responseArr);
+				
+				// response was actually created, encode and prep
+				if (responseArrEnd > 2) {
+					// encode response for future encode
+					// this is specific to teensy4.0, teensy 3.2 logic expects the encoded data to be written directly
+					for (int byte = 0; byte < responseArrEnd; byte++) {
+						for(int bit = 0; bit < 8; bit++){
+							_commResponse[(byte * 8) + bit] = responseArr[byte] >> (7 - bit) & 1;
+						}
+					}
+					// wait for second arg byte to come through (not implemented for reading yet...
+					_bitQueue = 8;
+					gtsCommandArgExpected = false;
+					gtsReadySend = true;
+				}
+				// there is a second argument flag present, its not been implemented yet...
+				//else {
+			}
+			
+			// we're ready to send our data
+			else if(gtsReadySend && gts_comms::isEnabled(_controls.extras[gts_comms::extrasGTSConfigSlot].config) && !_controls.safeMode) {
+				//wait for the stop bit to be received and clear it
+				while(!Serial2.available()){}
+				Serial2.clear();
+
+				//switch the hardware serial to high speed for sending the response, set the _writing flag to true, and set the expected bit queue length to the probe response length minus 1 (to account for the stop bit)
+				setFastBaud();
+				_writing = true;
+				_bitQueue = responseArrEnd/2;
+				
+				//write the response
+				for(int i = 0; i < (responseArrEnd * 8); i += 2){
+					if(_commResponse[i] != 0 && _commResponse[i+1] != 0){
+						//short low period = 1
+						//long low period = 0
+						Serial2.write(0xEF);
+					} else if (_commResponse[i] == 0 && _commResponse[i+1] != 0){
+						Serial2.write(0xE8);
+					} else if (_commResponse[i] != 0 && _commResponse[i+1] == 0){
+						Serial2.write(0x0F);
+					} else if (_commResponse[i] == 0 && _commResponse[i+1] == 0){
+						Serial2.write(0x08);
+					}
+				}
+				//write stop bit to indicate end of response
+				Serial2.write(0xFF);
+				responseArrEnd = 1;
+				gtsReadySend = false;
+			}
+#endif
 			//if we got something else then something went wrong, print the command we got and increase the error count
 			else{
 				Serial.print("error: ");
@@ -434,7 +514,12 @@ void commInt() {
 			}
 
 			//if the command byte is all 0s it is probe command, we will send a probe response
+#ifdef EXTRAS_GTS_COMMS
+			//for gts comms we also need to make sure we aren't just waiting to send
+			if(_cmdByte == 0b00000000 && !gtsReadySend){
+#else
 			if(_cmdByte == 0b00000000){
+#endif
 				//wait for the stop bit to be received and clear it
 				while(!Serial2.available()){}
 				Serial2.clear();
@@ -497,6 +582,82 @@ void commInt() {
 				_bitQueue = 16;
 				setCommResponse(_commResponse, _btn);
 			}
+#ifdef EXTRAS_GTS_COMMS
+			//0x60
+			// only respond if extra is enabled, and we're not in safe mode
+			// checks for safe mode and enabled are in if so that if either are false we fall to the default case below
+			else if(_cmdByte == 0b01100000 && gts_comms::isEnabled(_controls.extras[gts_comms::extrasGTSConfigSlot].config) && !_controls.safeMode) {
+				Serial.println("got gts id");
+				Serial.print("Received byte: ");
+				debug_println((int) _cmdByte);
+				gtsCommandArgExpected = true;
+				_bitQueue = 8;
+			}
+				
+			// we should be receiving a command arg
+			else if(gtsCommandArgExpected && gts_comms::isEnabled(_controls.extras[gts_comms::extrasGTSConfigSlot].config) && !_controls.safeMode) {
+				Serial.println("got gts arg");
+				Serial.print("Received byte: ");
+				debug_println((int) _cmdByte);
+				// get response for given argument
+				responseArrEnd = gts_comms::interpretCommandArg(_cmdByte, responseArr);
+				
+				// response was actually created, encode and prep
+				if (responseArrEnd > 2) {
+					Serial.println("got proper data");
+					// encode response for future
+					// this is specific to teensy4.0, teensy 3.2 logic expects the encoded data to be written directly
+					for (int byte = 0; byte < responseArrEnd; byte++) {
+						debug_println(responseArr[byte]);
+						for(int bit = 0; bit < 8; bit++){
+							_gtsResponse[(byte * 8) + bit] = responseArr[byte] >> (7 - bit) & 1;
+							debug_print((int)_commResponse[(byte*8) + bit]);
+						}
+						debug_println("");
+					}
+					// wait for second arg byte to come through (not implemented for reading yet...
+					_bitQueue = 8;
+					gtsCommandArgExpected = false;
+					gtsReadySend = true;
+					Serial.println("set ready send");
+				}
+				// there is a second argument flag present, its not been implemented yet...
+				//else {
+			}
+			
+			// we're ready to send our data
+			else if(gtsReadySend && gts_comms::isEnabled(_controls.extras[gts_comms::extrasGTSConfigSlot].config) && !_controls.safeMode) {
+				Serial.println("sending gts data?");
+				Serial.print("Received byte: ");
+				debug_println((int) _cmdByte);
+				//wait for the stop bit to be received and clear it
+				while(!Serial2.available()){}
+				Serial2.clear();
+				
+				//switch the hardware serial to high speed for sending the response, set the _writing flag to true, and set the expected bit queue length to the probe response length minus 1 (to account for the stop bit)
+				setFastBaud();
+				//Serial2.setTX(8,true);
+				
+				//write the response
+				for(int i = 0; i < (responseArrEnd * 8); i += 2){
+					if(_gtsResponse[i] != 0 && _gtsResponse[i+1] != 0){
+						//short low period = 1
+						//long low period = 0
+						Serial2.write(0xEF);
+					} else if (_gtsResponse[i] == 0 && _gtsResponse[i+1] != 0){
+						Serial2.write(0xE8);
+					} else if (_gtsResponse[i] != 0 && _gtsResponse[i+1] == 0){
+						Serial2.write(0x0F);
+					} else if (_gtsResponse[i] == 0 && _gtsResponse[i+1] == 0){
+						Serial2.write(0x08);
+					}
+				}
+				//write stop bit to indicate end of response
+				Serial2.write(0xFF);
+				responseArrEnd = 1;
+				gtsReadySend = false;
+			}
+#endif
 			//if we got something else then something went wrong, print the command we got and increase the error count
 			else{
 				//digitalWriteFast(_pinLED,LOW);
@@ -617,16 +778,6 @@ void communicate(){
 			_commStatus = _commWrite;
 			Serial.println("origin");
 		  break;
-		  /*
-#ifdef EXTRAS_GTS_COMMS
-		case 0x60:
-			// only respond if extra is enabled, and we're not in safe mode
-			if (gts_comms::isEnabled(_controls.extras[gts_comms::extrasGTSConfigSlot].config) && !_controls.safeMode) {
-			
-			}
-			break;
-#endif
-		   */
 
 		//poll
 		case 0x40:
@@ -637,6 +788,17 @@ void communicate(){
 			//create the poll response
 			setCommResponse(_commResponse, _btn);
 			break;
+			
+#ifdef EXTRAS_GTS_COMMS
+		case 0x60:
+			// only respond if extra is enabled, and we're not in safe mode
+			// break is inside the if statement so that the switch falls through to the default case
+			if (gts_comms::isEnabled(_controls.extras[gts_comms::extrasGTSConfigSlot].config) && !_controls.safeMode) {
+				
+				break;
+			}
+#endif
+		
 		default:
 		  //got something strange, try waiting for a stop bit to syncronize
 			Serial.println("error");

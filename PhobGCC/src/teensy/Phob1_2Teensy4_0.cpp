@@ -31,6 +31,8 @@ const int _pinRumble = 12;
 const int _pinBrake = 11;
 const int _pinInt = 7;
 
+const int _boardID = 5;
+
 //don't #define USEADCSCALE
 
 void serialSetup() {

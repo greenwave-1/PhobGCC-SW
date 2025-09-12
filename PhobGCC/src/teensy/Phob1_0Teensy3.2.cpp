@@ -29,6 +29,8 @@ const int _pinS = 19;
 const int _pinLED = 13;
 const int _pinInt = 9;
 
+const int _boardID = 1;
+
 void serialSetup() {
 	Serial.begin(57600);
 	Serial.println("This is the header for board revision 1.0 with a Teensy 3.2.");

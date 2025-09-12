@@ -21,6 +21,8 @@ namespace gts_comms {
 		GTS_COMMS_ENABLED
 	};
 	
+	int interpretCommandArg(uint8_t arg, uint8_t response[]);
+	
 	int getSettingsLen();
 	
 	bool isEnabled(const IntOrFloat config[]);

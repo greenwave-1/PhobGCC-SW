@@ -38,6 +38,11 @@
    I advise checking the RP2040 documentation and this video https://www.youtube.com/watch?v=yYnQYF_Xa8g&ab_channel=stacksmashing to understand
 */
 
+#ifdef EXTRAS_GTS_COMMS
+static uint8_t responseArr[10] = { 0 };
+static int responseArrEnd = 0;
+#endif
+
 void __time_critical_func(convertToPio)(const uint8_t* command, const int len, uint32_t* result, int& resultLen) {
     // PIO Shifts to the right by default
     // In: pushes batches of 8 shifted left, i.e we get [0x40, 0x03, rumble (the end bit is never pushed)]
@@ -198,24 +203,36 @@ void __time_critical_func(enterMode)(const int dataPin,
         }
 #ifdef EXTRAS_GTS_COMMS
         //Respond to 0x60 if gts comms extras is enabled, and if we're outside of safe mode
-        //For any of these, we don't use the first response byte, since two bits are reserved for errors
+        //For any of these, we use the first response byte as a 4 bit checksum, since two bits are reserved for errors
         else if (joybusByte == 0x60 && gts_comms::isEnabled(_controls.extras[gts_comms::extrasGTSConfigSlot].config) && !_controls.safeMode) {
 			
-			//get the second byte; we do this interleaved with work that must be done
-            //joybusByte = pio_sm_get_blocking(pio, 0);
+			//get second byte: this tells us what the console actually wants
+            joybusByte = pio_sm_get_blocking(pio, 0);
+            
+            // interpretation code is in gts_comms.cpp
+            responseArrEnd = gts_comms::interpretCommandArg(joybusByte, responseArr);
 			
-			//get the third byte; we do this interleaved with work that must be done
-            //joybusByte = pio_sm_get_blocking(pio, 0);
+			//get the third byte: another argument? TODO
+            joybusByte = pio_sm_get_blocking(pio, 0);
+            
+            // console is requesting specific data, second arg says what exactly
+            // TODO
+            if (responseArrEnd == 1) {
+    
+            }
+            
+            uint32_t result[responseArrEnd * 2 + 1];
+            int resultLen;
 			
-            int controlsSize = gts_comms::getSettingsLen();
+            //int controlsSize = gts_comms::getSettingsLen();
             //uint8_t probeResponse[4] = { 0x00, 0xFF, 0xFF, 0xFF };
             //probeResponse[2] = (controlsSize & 0xFF00) >> 8;
             //probeResponse[3] = controlsSize & 0x00FF;
-            uint8_t probeResponse[2] = { 0x00, 0xFF };
-            uint32_t result[4];
-            int resultLen;
+            //uint8_t probeResponse[2] = { 0x00, 0xFF };
+            //uint32_t result[4];
+            //int resultLen;
             //convertToPio(probeResponse, 4, result, resultLen);
-            convertToPio(probeResponse, 2, result, resultLen);
+            convertToPio(responseArr, responseArrEnd, result, resultLen);
             sleep_us(15); // 3.75us into the bit before end bit => 6.25 to wait if the end-bit is 5us long
 
             pio_sm_set_enabled(pio, 0, false);

@@ -11,7 +11,7 @@
 //#define PHOB_1_1_TEENSY_3_2_DIODE       // For PhobGCC board 1.1 with Teensy 3.2 and the diode shorted
 //#define PHOB_1_1_TEENSY_4_0             // For PhobGCC board 1.1 with Teensy 4.0
 //#define PHOB_1_1_TEENSY_4_0_DIODE       // For PhobGCC board 1.1 with Teensy 4.0 and the diode shorted
-#define PHOB_1_2_TEENSY_4_0             // For PhobGCC board 1.2.x with Teensy 4.0
+//#define PHOB_1_2_TEENSY_4_0             // For PhobGCC board 1.2.x with Teensy 4.0
 //#define PHOB_PICO_PROTOBOARD            // For a protoboard with a Pico on it, used for developing for the RP2040
 //#define PHOB_2_0_PICO                   // For PhobGCC Board 2.0 with RP2040
 

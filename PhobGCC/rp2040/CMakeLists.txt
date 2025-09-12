@@ -25,6 +25,8 @@ add_executable(phobgcc_rp2040
 	src/navigateMenu.cpp
 	src/storage.cpp
 	src/readHardware.cpp
+	src/Phob2_0.cpp
+	src/PicoProtoboard.cpp
 	src/games/ping.cpp
 	../src/common/curveFitting.cpp
 	../src/common/filter.cpp

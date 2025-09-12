@@ -1,5 +1,10 @@
-#include "../common/phobGCC.h"
+#include "../../common/phobGCC.h"
 
+#ifdef PICO_RP2040
+#include "debug.h"
+#else
+#include "../../teensy/debug.h"
+#endif
 
 ControlConfig _controls{
 		.aRemap = 1 << A_REMAP,

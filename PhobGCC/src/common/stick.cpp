@@ -1,9 +1,9 @@
-#include "../common/stick.h"
+#include "../../common/stick.h"
 
 #ifdef PICO_RP2040
 #include "debug.h"
 #else
-#include "../teensy/debug.h"
+#include "../../teensy/debug.h"
 #endif
 
 float linearize(const float point, const float coefficients[]){

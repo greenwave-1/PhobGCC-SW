@@ -1,9 +1,9 @@
-#include "../extras/extras.h"
+#include "../../extras/extras.h"
 
 #ifdef PICO_RP2040
 #include "debug.h"
 #else
-#include "../teensy/debug.h"
+#include "../../teensy/debug.h"
 #endif
 
 ExtrasFunctions extrasFunctions[EXTRAS_SIZE] = { };

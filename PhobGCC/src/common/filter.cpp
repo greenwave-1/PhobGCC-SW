@@ -1,4 +1,4 @@
-#include "../common/filter.h"
+#include "../../common/filter.h"
 
 void runMedian(float &val, float valArray[MEDIANLEN], unsigned int &medianIndex){
 	//takes the value, inserts it into the value array, and then

@@ -1,13 +1,6 @@
-#ifndef BOARD_H
-#define BOARD_H
+#include "board.h"
 
-#ifndef RUMBLE
-#define RUMBLE
-#endif //RUMBLE
-
-#ifndef CLEANADC
-#define CLEANADC
-#endif //CLEANADC
+#ifdef PHOB_2_0_PICO
 
 //defining which pin is what
 //GPIO
@@ -55,7 +48,4 @@ const int _pinCx = -1;
 const int _pinCy = -1;
 const int _pinRX = -1;
 
-#include "debug.h"
-#include "readHardware.h"
-
-#endif //BOARD_H
+#endif

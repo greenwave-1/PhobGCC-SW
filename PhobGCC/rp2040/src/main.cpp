@@ -6,9 +6,11 @@
 #include "hardware/pwm.h"
 
 #include "phobGCC.h"
+#include "board.h"
 #include "comms/joybus.hpp"
 #include "cvideo.h"
 #include "cvideo_variables.h"
+
 
 volatile bool _videoOut = false;
 //Variables used by PhobVision to communicate with the event loop core

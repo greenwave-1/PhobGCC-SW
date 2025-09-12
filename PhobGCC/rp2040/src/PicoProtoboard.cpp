@@ -1,9 +1,6 @@
-#ifndef BOARD_H
-#define BOARD_H
+#include "board.h"
 
-#ifndef CLEANADC
-#define CLEANADC
-#endif //CLEANADC
+#ifdef PHOB_PICO_PROTOBOARD
 
 //defining which pin is what
 //GPIO
@@ -52,7 +49,4 @@ const int _pinCx = -1;
 const int _pinCy = -1;
 const int _pinRX = -1;
 
-#include "debug.h"
-#include "readHardware.h"
-
-#endif //BOARD_H
+#endif

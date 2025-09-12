@@ -1,16 +1,9 @@
-#ifndef BOARD_H
-#define BOARD_H
+#include "../../common/board.h"
+
+#if defined(PHOB_1_1_TEENSY_3_2) || defined(PHOB_1_1_TEENSY_3_2_DIODE)
 
 #include <ADC.h>
 #include <VREF.h>
-#include "debug.h"
-#include "settings.h"
-
-//Hardware specific code for PhobGCC board revision 1.1 with a Teensy 3.2
-#define TEENSY3_2
-
-//Hardware specific code for half duplex—using one pin for both TX and RX
-#define HALFDUPLEX
 
 //defining which pin is what on the teensy
 const int _pinLa = 16;
@@ -53,7 +46,4 @@ void ADCSetup(ADC * adc,
 
 }
 
-//must include at the end
-#include "readHardware.h"
-#include "comms.h"
-#endif // BOARD_H
+#endif

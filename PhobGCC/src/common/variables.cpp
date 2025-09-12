@@ -1,4 +1,4 @@
-#include "../common/variables.h"
+#include "../../common/variables.h"
 
 Buttons _btn;
 
